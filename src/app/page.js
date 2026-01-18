@@ -30,7 +30,7 @@ export default function Home() {
     } else if (nowInHour >= 12 && nowInHour < 15) {
       setGreeting("Good Afternoon!");
       setGreetingImage("/af.jpg");
-    } else if (nowInHour > 15 && nowInHour < 22) {
+    } else if (nowInHour >= 15 && nowInHour < 22) {
       setGreeting("Good Evening!");
       setGreetingImage("/ev.jpg");
     } else {
@@ -80,8 +80,32 @@ export default function Home() {
 
   if (!user) return null;
 
-  if (!rankedWeather.length || !rankedWeather[0]?.main ||isLoading) {
+  if (!rankedWeather.length || !rankedWeather[0]?.main || isLoading) {
     return <p className="text-black text-center mt-10">Loading weather...</p>;
+  }
+
+  function getWindDirection(deg) {
+    const directions = [
+      "N",
+      "NNE",
+      "NE",
+      "ENE",
+      "E",
+      "ESE",
+      "SE",
+      "SSE",
+      "S",
+      "SSW",
+      "SW",
+      "WSW",
+      "W",
+      "WNW",
+      "NW",
+      "NNW",
+    ];
+
+    const index = Math.round(deg / 22.5) % 16;
+    return directions[index];
   }
 
   return (
@@ -121,9 +145,7 @@ export default function Home() {
                 {rankedWeather[0].name}
               </p>
               <p className="text-[16px]">
-                {new Date(
-                  rankedWeather[0].dt * 1000,
-                ).toLocaleString("en-US", {
+                {new Date(rankedWeather[0].dt * 1000).toLocaleString("en-US", {
                   hour: "2-digit",
                   minute: "2-digit",
                   hour12: true,
@@ -145,17 +167,17 @@ export default function Home() {
                         ? "/sunny.png"
                         : rankedWeather[0].weather[0].main === "Clouds"
                           ? "/cloudy.png"
-                          : rankedWeather[0].weather[0].main === "Rain" ||
-                              "Drizzle" ||
-                              "Thunderstorm"
+                          : ["Rain", "Drizzle", "Thunderstorm"].includes(
+                                rankedWeather[0].weather[0].main,
+                              )
                             ? "/rainy.png"
-                            : rankedWeather[0].weather[0].main === "Mist" ||
-                                "Fog" ||
-                                "Haze"
+                            : ["Fog", "Haze", "Mist"].includes(
+                                  rankedWeather[0].weather[0].main,
+                                )
                               ? "/foggy.png"
                               : "/sunny.png"
                     }
-                    alt={rankedWeather[0].weather.main}
+                    alt={rankedWeather[0].weather[0].main}
                     width={108}
                     height={108}
                     className="w-[50px] md:w-[108px] h-[50px] md:h-[108px]"
@@ -170,9 +192,9 @@ export default function Home() {
                           ? "Rainy"
                           : rankedWeather[0].weather[0].main === "Drizzle"
                             ? "Light Rain"
-                            : rankedWeather[0].weather[0].main === "Mist" ||
-                                "Fog" ||
-                                "Haze"
+                            : ["Fog", "Haze", "Mist"].includes(
+                                  rankedWeather[0].weather[0].main,
+                                )
                               ? "Foggy"
                               : rankedWeather[0].weather[0].main}
                   </p>
@@ -205,7 +227,7 @@ export default function Home() {
                 <div className="w-full flex flex-row justify-between text-[18px] md:text-[20px]">
                   <p>Wind</p>
                   <p className="font-bold">
-                    {Math.round(rankedWeather[0].wind.speed)} km/h
+                    {Math.round(rankedWeather[0].wind.speed) * 3.6} km/h
                   </p>
                 </div>
 
@@ -224,34 +246,201 @@ export default function Home() {
 
           {/* All ranks show case */}
           <div className="w-[300px] md:w-[37.92vw] md:min-w-[244px] flex flex-col md:flex-wrap md:flex-row bg-[#234C6A80] rounded-[15px] pb-[37px] justify-center gap-[7.52vh] md:gap-[1.61vw] items-center">
-            <p className="w-full text-[24px] font-bold text-center mt-[23px]">Ranking</p>
-            {rankedWeather.map((data, idx) => (
+            <p className="w-full text-[24px] font-bold text-center mt-[23px]">
+              Ranking
+            </p>
+            {rankedWeather.map((data, idx) =>
               idx === 0 ? (
-                <div key={data.id} className="w-[204px] h-[197px] bg-[#456882] rounded-[15px] relative cursor-pointer transition-transform ease-in-out duration-300 hover:scale-105" onClick={()=>setCityCode(data.id)}>
-                  <Image src="/crown.png" alt="crown" width={50} height={50} className="absolute top-[-40] left-[175] rotate-[22.02deg]"/>
-                  <p className="font-bold text-[20px] mt-[12px] text-center">{data.name}</p>
-                  <p className="text-[36px] mt-[23px] text-center">{Math.round(data.main.temp)} °C</p>
-                  <p className="text-[15px] mt-[23px] text-center">Comfort Score: {data.fixedComfortIndex}</p>
-                  <p className="text-[15px] font-bold text-center">Rank: {idx+1}</p>
+                <div
+                  key={data.id}
+                  className="w-[204px] h-[197px] bg-[#456882] rounded-[15px] relative cursor-pointer transition-transform ease-in-out duration-300 hover:scale-105"
+                  onClick={() => setCityCode(data.id)}
+                >
+                  <Image
+                    src="/crown.png"
+                    alt="crown"
+                    width={50}
+                    height={50}
+                    className="absolute top-[-40] left-[175] rotate-[22.02deg]"
+                  />
+                  <p className="font-bold text-[20px] mt-[12px] text-center">
+                    {data.name}
+                  </p>
+                  <p className="text-[36px] mt-[23px] text-center">
+                    {Math.round(data.main.temp)} °C
+                  </p>
+                  <p className="text-[15px] mt-[23px] text-center">
+                    Comfort Score: {data.fixedComfortIndex}
+                  </p>
+                  <p className="text-[15px] font-bold text-center">
+                    Rank: {idx + 1}
+                  </p>
                 </div>
-              ) 
-              : (
-                <div key={data.id} className="w-[204px] h-[197px] bg-[#456882] rounded-[15px] flex flex-col items-center cursor-pointer transition-transform ease-in-out duration-300 hover:scale-105" onClick={()=>setCityCode(data.id)}>
+              ) : (
+                <div
+                  key={data.id}
+                  className="w-[204px] h-[197px] bg-[#456882] rounded-[15px] flex flex-col items-center cursor-pointer transition-transform ease-in-out duration-300 hover:scale-105"
+                  onClick={() => setCityCode(data.id)}
+                >
                   <p className="font-bold text-[20px] mt-[12px]">{data.name}</p>
-                  <p className="text-[36px] mt-[23px]">{Math.round(data.main.temp)} °C</p>
-                  <p className="text-[15px] mt-[23px]">Comfort Score: {data.fixedComfortIndex}</p>
-                  <p className="text-[15px] font-bold">Rank: {idx+1}</p>
+                  <p className="text-[36px] mt-[23px]">
+                    {Math.round(data.main.temp)} °C
+                  </p>
+                  <p className="text-[15px] mt-[23px]">
+                    Comfort Score: {data.fixedComfortIndex}
+                  </p>
+                  <p className="text-[15px] font-bold">Rank: {idx + 1}</p>
                 </div>
-              )
-            ))}
+              ),
+            )}
           </div>
         </div>
       ) : (
         weatherData && (
-          <div>
-            <p>{weatherData.name}</p>
-            <p>{weatherData.main.temp} °C</p>
-            <p>{weatherData.fixedComfortIndex}</p>
+          <div className="w-[350px] sm:w-[500px] lg:w-[1037px] flex flex-col bg-[#234C6A] rounded-[15px] pt-[29px] pb-[61px] items-center mb-[106px] mt-[133px]">
+            <div className="w-[299px] sm:w-[399px] lg:w-[936px] flex flex-row justify-between items-center">
+              <p className="text-[40px]">{weatherData.name}</p>
+              <p className="text-[16px]">
+                {new Date(weatherData.dt * 1000).toLocaleString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </p>
+            </div>
+
+            <div className="w-[299px] sm:w-[399px] lg:w-[936px] h-[1px] bg-[#FFFFFF]"></div>
+
+            {/* Second Part */}
+            <div className="w-[299px] sm:w-[399px] lg:w-[936px] flex flex-col lg:flex-row justify-start lg:justify-between items-center lg:items-start mt-[44px]">
+              {/* Image and the Temp and ranks */}
+              <div className="w-[299px] sm:w-[331px] flex flex-col sm:flex-row justify-between items-center sm:items-start">
+                {/* Image and the weather */}
+                <div className="w-[167px] flex flex-col items-center sm:items-start">
+                  <Image
+                    src={
+                      weatherData.weather[0].main === "Clear"
+                        ? "/sunny.png"
+                        : weatherData.weather[0].main === "Clouds"
+                          ? "/cloudy.png"
+                          : ["Rain", "Drizzle", "Thunderstorm"].includes(
+                                weatherData.weather[0].main,
+                              )
+                            ? "/rainy.png"
+                            : ["Fog", "Haze", "Mist"].includes(
+                                  weatherData.weather[0].main,
+                                )
+                              ? "/foggy.png"
+                              : "/sunny.png"
+                    }
+                    alt={weatherData.weather[0].main}
+                    width={167}
+                    height={167}
+                    className="w-[100px] sm:w-[167px] h-[100px] sm:h-[167px]"
+                  />
+                  <p className="text-[32px]">
+                    {weatherData.weather[0].main === "Clear"
+                      ? "Sunny"
+                      : weatherData.weather[0].main === "Clouds"
+                        ? "Cloudy"
+                        : weatherData.weather[0].main === "Rain"
+                          ? "Rainy"
+                          : weatherData.weather[0].main === "Drizzle"
+                            ? "Light Rain"
+                            : ["Fog", "Haze", "Mist"].includes(
+                                  weatherData.weather[0].main,
+                                )
+                              ? "Foggy"
+                              : weatherData.weather[0].main}
+                  </p>
+                </div>
+                {/* Temp and Ranks,Humidity */}
+                <div className="w-[133px] h-full flex flex-col justify-center items-center sm:items-start">
+                  <p className="text-[48px]">
+                    {Math.round(weatherData.main.temp)} °C
+                  </p>
+                  <p>Humidity: {weatherData.main.humidity}%</p>
+                  <p>RealFeel: {Math.round(weatherData.main.feels_like)}°</p>
+                  <p>
+                    Rank:{" "}
+                    {rankedWeather.findIndex(
+                      (city) => city.id === weatherData.id,
+                    ) + 1}
+                  </p>
+                </div>
+              </div>
+
+              {/* Details */}
+              <div className="w-[299px] sm:w-[409px] flex flex-col gap-[1.94vh] mt-[4vh] lg:mt-0 text-[20px] sm:text-[32px]">
+                <div className="w-full flex flex-row justify-between">
+                  <p>RealFeel</p>
+                  <p className="font-bold">
+                    {Math.round(weatherData.main.feels_like)}°
+                  </p>
+                </div>
+
+                <div className="w-full h-[1px] bg-[#FFFFFF]"></div>
+
+                <div className="w-full flex flex-row justify-between">
+                  <p>Wind</p>
+                  <p className="font-bold">
+                    {getWindDirection(weatherData.wind.deg)}{" "}
+                    {Math.round(weatherData.wind.speed) * 3.6} km/h
+                  </p>
+                </div>
+
+                <div className="w-full h-[1px] bg-[#FFFFFF]"></div>
+
+                <div className="w-full flex flex-row justify-between">
+                  <p>Gust</p>
+                  <p className="font-bold">
+                    {Math.round(weatherData.wind.gust) * 3.6} km/h
+                  </p>
+                </div>
+
+                <div className="w-full h-[1px] bg-[#FFFFFF]"></div>
+
+                <div className="w-full flex flex-row justify-between">
+                  <p>Air Quality</p>
+                  <p
+                    className={
+                      weatherData.airQlty === 1
+                        ? "text-[#08E028] font-bold"
+                        : weatherData.airQlty === 2
+                          ? "text-[#8FC932] font-bold"
+                          : weatherData.airQlty === 3
+                            ? "text-[#E0BE37] font-bold"
+                            : weatherData.airQlty === 4
+                              ? "text-[#C2643D] font-bold"
+                              : weatherData.airQlty === 5
+                                ? "text-[#F81111] font-bold"
+                                : "font-bold text-[#FFFFFF]"
+                    }
+                  >
+                    {weatherData.airQlty === 1
+                      ? "Healthy"
+                      : weatherData.airQlty === 2
+                        ? "Fair"
+                        : weatherData.airQlty === 3
+                          ? "Moderate"
+                          : weatherData.airQlty === 4
+                            ? "Bad"
+                            : weatherData.airQlty === 5
+                              ? "Unhealthy"
+                              : "Unexpected"}
+                  </p>
+                </div>
+
+                <div className="w-full h-[1px] bg-[#FFFFFF]"></div>
+
+                <div className="w-full flex flex-row justify-between">
+                  <p>Comfort Score</p>
+                  <p className="font-bold">
+                    {weatherData.fixedComfortIndex}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         )
       )}
