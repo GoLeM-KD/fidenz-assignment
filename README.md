@@ -9,8 +9,10 @@
 2. Press `Ctrl + L`, type `cmd`, and press Enter.
 3. Run the following command: 
     ```bash
-    
+
     npm run dev
+4. The application runs on http://localhost:3000 by default.
+5. If the application runs on a different port, update the **APP_BASE_URL** value in the `.env.local` file and save the changes.
 
 ## Comfort Index
 
