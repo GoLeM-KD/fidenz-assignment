@@ -2,7 +2,7 @@ import cities from "../../cities.json";
 // ComfortIndex = (Temprature(F) + Humidity)/4
 // C ----> F = (C * 9/5)+ 32
 const cacheData = {};
-const CACHE_TIME = 12 * 60 * 1000;
+const CACHE_TIME = 5 * 60 * 1000;
 
 function genrateComfortIndex(temp, Humidity) {
   const IDEAL_TEMP = 71.6; // has converted 22C into F because Im gonna use F as the temp in the formula

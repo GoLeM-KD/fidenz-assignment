@@ -10,11 +10,11 @@ export default function Home() {
   const { user, isLoading } = useUser();
   const router = useRouter();
 
-  const [cityCode, setCityCode] = useState("");
-  const [weatherData, setWeatherData] = useState([]);
-  const [rankedWeather, setRankedWeather] = useState([]);
-  const [greeting, setGreeting] = useState("");
-  const [greetingImage, setGreetingImage] = useState("/gm.jpg");
+  const [cityCode, setCityCode] = useState(""); // This stores the city code automatically whenever we choose a city
+  const [weatherData, setWeatherData] = useState([]); // to store the row dataset of the weather (THROUGH API)
+  const [rankedWeather, setRankedWeather] = useState([]); // to store the dataset after sorted according to the comfort Index
+  const [greeting, setGreeting] = useState(""); // to catch the Greeting according to the Time ex:- Good Morning!
+  const [greetingImage, setGreetingImage] = useState("/gm.jpg"); // To catch the picture according to the greeting
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -391,14 +391,18 @@ export default function Home() {
 
                 <div className="w-full h-[1px] bg-[#FFFFFF]"></div>
 
-                <div className="w-full flex flex-row justify-between">
-                  <p>Gust</p>
-                  <p className="font-bold">
-                    {Math.round(weatherData.wind.gust) * 3.6} km/h
-                  </p>
-                </div>
+                {weatherData.wind.gust && (
+                  <div className="w-full flex flex-col gap-[1.94vh]">
+                    <div className="w-full flex flex-row justify-between">
+                      <p>Gust</p>
+                      <p className="font-bold">
+                        {Math.round(weatherData.wind.gust) * 3.6} km/h
+                      </p>
+                    </div>
 
-                <div className="w-full h-[1px] bg-[#FFFFFF]"></div>
+                    <div className="w-full h-[1px] bg-[#FFFFFF]"></div>
+                  </div>
+                )}
 
                 <div className="w-full flex flex-row justify-between">
                   <p>Air Quality</p>
@@ -435,9 +439,7 @@ export default function Home() {
 
                 <div className="w-full flex flex-row justify-between">
                   <p>Comfort Score</p>
-                  <p className="font-bold">
-                    {weatherData.fixedComfortIndex}
-                  </p>
+                  <p className="font-bold">{weatherData.fixedComfortIndex}</p>
                 </div>
               </div>
             </div>
