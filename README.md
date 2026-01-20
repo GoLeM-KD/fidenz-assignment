@@ -14,6 +14,7 @@
 4. The application runs on http://localhost:3000 by default.
 5. If the application runs on a different port, update the **APP_BASE_URL** value in the `.env.local` file and save the changes.
 
+* Has hosted on **Vercel** : https://fidenzassignment.vercel.app/
 ## Comfort Index
 
 To understand the concept of a Comfort Index, I researched existing approaches and found a reference formula:
