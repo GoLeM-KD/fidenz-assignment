@@ -81,7 +81,7 @@ export default function Home() {
   if (!user) return null;
 
   if (!rankedWeather.length || !rankedWeather[0]?.main || isLoading) {
-    return <p className="text-black text-center mt-10">Loading weather...</p>;
+    return <div className="w-full h-screen text-[#FFFFFF] font-bold flex justify-center items-center bg-[#1B3C53]"><p className="text-center mt-10">Loading weather...</p></div>;
   }
 
   function getWindDirection(deg) {
@@ -175,7 +175,7 @@ export default function Home() {
                                   rankedWeather[0].weather[0].main,
                                 )
                               ? "/foggy.png"
-                              : "/sunny.png"
+                              : "/snow.png"
                     }
                     alt={rankedWeather[0].weather[0].main}
                     width={108}
@@ -196,7 +196,9 @@ export default function Home() {
                                   rankedWeather[0].weather[0].main,
                                 )
                               ? "Foggy"
-                              : rankedWeather[0].weather[0].main}
+                              : rankedWeather[0].weather[0].main === "Snow"
+                                ? "Snow"
+                                : rankedWeather[0].weather[0].main}
                   </p>
                 </div>
 
@@ -331,7 +333,7 @@ export default function Home() {
                                   weatherData.weather[0].main,
                                 )
                               ? "/foggy.png"
-                              : "/sunny.png"
+                              : "/snow.png"
                     }
                     alt={weatherData.weather[0].main}
                     width={167}
@@ -351,7 +353,9 @@ export default function Home() {
                                   weatherData.weather[0].main,
                                 )
                               ? "Foggy"
-                              : weatherData.weather[0].main}
+                              : weatherData.weather[0].main === "Snow"
+                                ? "Snow"
+                                : weatherData.weather[0].main}
                   </p>
                 </div>
                 {/* Temp and Ranks,Humidity */}
@@ -447,7 +451,10 @@ export default function Home() {
         )
       )}
 
-      <LogoutButton />
+
+      <div className="w-full flex justify-end pr-[2.14vw] mb-[20px]">
+        <LogoutButton/>
+      </div> 
     </div>
   );
 }
